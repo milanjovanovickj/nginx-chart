@@ -83,20 +83,20 @@ affinity: {}
 startupProbe:
   httpGet:
     scheme: HTTP
-    path: /api/health-check
+    path: /
     port: 80
   timeoutSeconds: 5
 livenessProbe:
   httpGet:
     scheme: HTTP
-    path: /api/health-check
+    path: /
     port: 80
   timeoutSeconds: 5
   initialDelaySeconds: 30
 readinessProbe:
   httpGet:
     scheme: HTTP
-    path: /api/health-check
+    path: /
     port: 80
   timeoutSeconds: 5
   initialDelaySeconds: 30
