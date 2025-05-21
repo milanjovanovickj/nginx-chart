@@ -1,0 +1,18 @@
+{{- if .Values.securityGroupPolicy.enabled -}}
+apiVersion: vpcresources.k8s.aws/v1beta1
+kind: SecurityGroupPolicy
+metadata:
+  name: {{ include "regions-service.fullname" . }}
+spec:
+  podSelector:
+    matchLabels:
+        {{- include "regions-service.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- with .Values.securityGroupPolicy.groupIds }}
+  securityGroups:
+    groupIds: 
+      {{- toYaml . | nindent 8 }}
+  {{- end }}
+{{- end }}

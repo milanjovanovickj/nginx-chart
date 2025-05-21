@@ -1,0 +1,16 @@
+{{- if .Values.targetGroupBinding.enabled -}}
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ include "regions-service.fullname" . }}
+spec:
+  targetType: {{ .Values.targetGroupBinding.targetType }}
+  serviceRef:
+    name: {{ include "regions-service.fullname" . }}
+    port: {{ .Values.service.port }}
+  targetGroupARN: {{ .Values.targetGroupBinding.targetGroupARN }}
+  {{- with .Values.targetGroupBinding.networking }}
+  networking:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

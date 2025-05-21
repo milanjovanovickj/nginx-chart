@@ -1,0 +1,177 @@
+# Default values for regions-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: "nginx"
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+env: {}
+secret: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 1
+    memory: 1024Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+startupProbe:
+  httpGet:
+    scheme: HTTP
+    path: /api/health-check
+    port: 80
+  timeoutSeconds: 5
+livenessProbe:
+  httpGet:
+    scheme: HTTP
+    path: /api/health-check
+    port: 80
+  timeoutSeconds: 5
+  initialDelaySeconds: 30
+readinessProbe:
+  httpGet:
+    scheme: HTTP
+    path: /api/health-check
+    port: 80
+  timeoutSeconds: 5
+  initialDelaySeconds: 30
+ingress:
+  enabled: false
+  # class: "nginx"
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: regions.local
+      paths: 
+        - /
+
+    # - host: soketi.test
+    #   paths:
+    #     - /
+  tls: []
+  #  - secretName: soketi-example-tls
+  #    hosts:
+  #      - soketi-example.local
+
+securityGroupPolicy: 
+  enabled: false 
+  groupIds: []
+
+targetGroupBinding:
+  enabled: false 
+  targetGroupARN: "arn:xxx"
+  targetType: ip 
+  networking:
+    ingress: 
+      - from: 
+        - securityGroup:
+            groupID: sg-xxx
+        ports:
+          - protocol: TCP
+            port: 80
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+  # Set the behavior for the autoscaler.
+  # https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-configurable-scaling-behavior
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 1800
+    scaleUp:
+      stabilizationWindowSeconds: 10
+
+  # Custom Metrics will be appended to the default CPU/Memory resources (if they're enabled).
+  customMetrics: []
+  # - type: Pods
+  #   pods:
+  #     metric:
+  #       name: nginx_process_utilization
+  #     target:
+  #       type: AverageValue
+  #       averageValue: "50"
+
+newrelic:
+  enabled: true
+  image:
+    repository: "newrelic/php-daemon"
+    tag: "10.20.0"
+    pullPolicy: IfNotPresent
+  env: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
